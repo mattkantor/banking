@@ -29,3 +29,7 @@ def test_user_entry_too_much_per_week():
 
 def test_user_entry_too_many_per_day():
     assert False
+
+def test_transaction_based_logger_is_in_sync():
+    assert False
+

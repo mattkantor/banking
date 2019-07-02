@@ -18,26 +18,14 @@ log = {}
 
 
 
-
-
-def write_to_log(line):
-    id = line["id"]
-    date = line["time"]
-    logline = dict(id=id, time=time)
-    #deddup
-    log.append(logline)
-
-
-
-
 def ingest():
     '''ingest the file'''
     d = {}
     with open(INPUT_FILE) as f:
         for line in f:
         json_line = line.split()
-        json_data = json.loads(json_line)
-        d[int(key)] = val
+        json_dict = json.loads(json_line)
+        process_item(json_dict)
 
 
 def main():
