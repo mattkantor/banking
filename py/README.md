@@ -14,6 +14,8 @@
 
 `$ make test`
 
+`$ make run`
+
 `$ cat ../results_py.txt`
 
 

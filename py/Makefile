@@ -6,7 +6,7 @@ init:
 	pip3 install -U pytest; 
 
 run:
-	python integration_test.py
+	python test_integration.py
 
 tests:
 	pytest -o log_cli=true *.py

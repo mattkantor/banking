@@ -1,6 +1,4 @@
-# it should parse the file correctly
 
-# it should manage a users account correctly
 
 #unit
 from _decimal import Decimal, ROUND_HALF_UP
