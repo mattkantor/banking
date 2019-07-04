@@ -25,4 +25,5 @@
 You really dont need anything else.  It's all hidden.
 - as opposed to doing anything persistent, I wanted a way to quickly and easily match the logic to the rules of the loading. Given this is an exercise, in reality we mah not want to group by mondays and date offsets, especially if its the only optiion.  I'm sort of thinking we have multiple ways of storing our data, this is good way for this exercise.
 - In go, it would be a bit more elegant I think.
+- Obviously this isnt optimized for much, there's no persistence or anything.
 
