@@ -3,3 +3,4 @@ go/bin/main
 py/__pycache__
 py/.pytest_cache
 .vscode
+.idea

@@ -1,6 +1,14 @@
 package main
 
-import "time"
+import (
+	"encoding/json"
+	"flag"
+	"log"
+	"os"
+	"time"
+
+	"bufio"
+)
 
 type EventLogEntry struct {
 	CustomerId string
@@ -16,23 +24,66 @@ type ResultLogEntry struct {
 }
 
 type App struct {
-	Manager DBManager
+	Cc CustomerController
+
 }
 
 func NewApp() App {
-	manager := GetDBManager()
-	return App{Manager: manager}
+	cc := NewCustomerController()
+	return App{Cc: cc}
 }
 
 func main() {
-
+	//process flags
+	inFile := *flag.String("in", "../input.txt","Name of the file")
+	outFile := *flag.String("out", "../results_go.txt", "File to export")
+	flag.Parse()
 	app := NewApp()
-	app.process()
+
+	app.process(inFile, outFile)
 
 }
 
-func (app *App) process() {
-	// TODO get the file
+func parseInputFile(fileName string) []EventLogEntry {
+	file, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	var entries []EventLogEntry
+	for scanner.Scan() {
+		var entry EventLogEntry
+		line := scanner.Text()
+		json.Unmarshal([]byte(line),&entry)
+		entries = append(entries, entry)
+	}
+	return entries
+
+
+}
+func writeLog(out ResultLogEntry){
+
+}
+
+func (app *App) process(inputFile, outputFile string) {
+	
+	var inputs []EventLogEntry
+	inputs = parseInputFile(inputFile)
+	for i := 0; i < len(inputs); i++ {
+		out, err:=app.Cc.AddDeposit(inputs[i])
+		if err != 403{
+			writeLog(out)
+		}
+
+	}
+
+
 }
 
 // ReadPackedFile is a function to unpack a tar.gz

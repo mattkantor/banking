@@ -1,13 +1,21 @@
 package main
 
-import "time"
 
-type CustomerController interface {
-	AddDeposit(customer string, txn string, date time.Time, amount float64)
-	CheckForExistingTransaction()
-	GetDepositsForDate()
-	GetDepositsForWeek()
-	GetCustomerHistory()
+
+type DepositsPerDay struct{
+	DayOfWeek int8
+	Deposits []float64
+}
+
+type DepositsPerWeek struct {
+	Monday string
+	DailyDeposits []DepositsPerDay
+}
+
+type CustomerData struct{
+	CustomerId string //purposefully redundant
+	Transactions []string
+	Deposits []DepositsPerWeek
 }
 
 var instance DBManager
@@ -15,25 +23,26 @@ var instance DBManager
 // DBManager holds the database config
 type DBManager struct {
 	// TODO make this a proper data storage structure
-	db            map[string]string
+	db            map[string]CustomerData
 	isInitialized bool
 }
 
 // GetDBManager is the constructor for singleton
-func GetDBManager() DBManager {
+func GetDBManager() *DBManager {
 	if instance.isInitialized {
-		return instance
+		return &instance
 	}
 	return newDbManager()
 
 }
 
-func newDbManager() DBManager {
+func newDbManager() *DBManager {
 
-	return DBManager{isInitialized: true, db: make(map[string]string)}
+	return &DBManager{isInitialized: true, db: make(map[string]CustomerData)}
 }
 
-func (dbManager DBManager) AddDeposit(customer string, txn string, date time.Time, amount float64) (bool, error) {
+func (dbManager DBManager) AddDeposit(e EventLogEntry) (ResultLogEntry, int) {
 	// TODO
-	return true, nil
+	var res  = ResultLogEntry{CustomerId:"1", TxnId:"1", Accepted:true}
+	return res, 200
 }
