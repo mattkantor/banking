@@ -1,15 +1,15 @@
 init:
-	python3 -m venv env; \
-	echo 'source venv/bin/activate' >> .env; \
+	python3  -m  venv  env; \
+	echo 'source env/bin/activate' >> .env; \
 	source ./env/bin/activate; \
 	pip3 install -r requirements.txt; \
-	pip install -U pytest \
+	pip3 install -U pytest; 
 
 run:
 	python main.py
 
-test:
-	pytest test.py
+tests:
+	pytest test_code.py
 
 update_deps:
 	source env/bin/activate; \
