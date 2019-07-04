@@ -72,7 +72,7 @@ func writeLog(out ResultLogEntry){
 }
 
 func (app *App) process(inputFile, outputFile string) {
-	
+
 	var inputs []EventLogEntry
 	inputs = parseInputFile(inputFile)
 	for i := 0; i < len(inputs); i++ {
@@ -83,10 +83,5 @@ func (app *App) process(inputFile, outputFile string) {
 
 	}
 
-
-}
-
-// ReadPackedFile is a function to unpack a tar.gz
-func ReadJsonFile(filepath string) {
 
 }
