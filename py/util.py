@@ -1,6 +1,7 @@
 import datetime
 from decimal import  ROUND_HALF_UP, InvalidOperation, Decimal
 import decimal
+import json
 
 # def parse_time_zone(date_of_action):
 #     return "UTC"
@@ -14,6 +15,13 @@ def breakdown_date(today):
 
     return datetime.datetime.strftime(monday, "%Y-%m-%d"), str(date_index)
 
+def load_json_lines(filename):
+    data_arr = []
+    with open(filename) as f:
+        for line in f:
+            json_dict = json.loads(line)
+            data_arr.append(json_dict)
+    return data_arr
 
 def sanitize_currency(money):
 

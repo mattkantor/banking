@@ -20,13 +20,12 @@ def test_sanitize_currency():
 
     money = '$1,150,593.21'
     curr = sanitize_currency(money)
-    assert curr == round(Decimal(1150593.21),2)
+    assert curr == round(Decimal(1150593.21), 2)
 
 def test_sanitize_currency_from_garbage():
     money = '$zx,cmzxc'
     curr = sanitize_currency(money)
     assert curr == 0
-
 
 monday = '2019-07-01'
 
@@ -69,19 +68,4 @@ def test_validation_should_be_valid():
     is_valid = v.validate(deposit_records,monday, "1", 230.23)
     assert is_valid is True
 
-
-# def test_user_entry_should_be_allowed():
-#     assert False
-#
-# def test_user_entry_too_much_per_day():
-#     assert False
-#
-# def test_user_entry_too_much_per_week():
-#     assert False
-#
-# def test_user_entry_too_many_per_day():
-#     assert False
-#
-# def test_transaction_based_logger_is_in_sync():
-#     assert False
 

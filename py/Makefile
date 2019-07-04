@@ -6,10 +6,10 @@ init:
 	pip3 install -U pytest; 
 
 run:
-	python main.py
+	python integration_test.py
 
 tests:
-	pytest test_code.py
+	pytest -o log_cli=true *.py
 
 update_deps:
 	source env/bin/activate; \
