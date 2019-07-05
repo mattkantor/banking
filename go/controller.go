@@ -1,36 +1,29 @@
 package main
 
-type CustomerController interface {
-	AddDeposit(e EventLogEntry)  (ResultLogEntry, int)
-	//CheckForExistingTransaction()
-	//GetDepositsForDate()
-	//GetDepositsForWeek()
-	//GetCustomerHistory()
-}
 
-type KohoCustomerController struct {
+type CustomerController struct {
 	DbManager *DBManager
 	Vm *ValidationManager
 }
 
 
-func (cc *KohoCustomerController) AddDeposit(e EventLogEntry) (accepted bool, code int){
+func (cc *CustomerController) AddDeposit(e EventLogEntry) (accepted bool, code int){
 
 	vm := NewValidationManager()
 
 	cd := cc.DbManager.getCustomerData(e.CustomerId)
 
 	customerTransactions := cd.Transactions
-	transactionId := e.TxnId
+	transactionId := e.Id
 
 	if contains(transactionId,customerTransactions){
 		return false, 403
 	}
 
 	if vm.IsValid(cd, e) {
-		err = cc.DbManager.addDeposit(e)
-		if err != nil {
-			panic(err)
+		err := cc.DbManager.loadAccount(e)
+		if err {
+			panic("Error adding deposit")
 			return false, 500
 		}
 		return true, 200
@@ -44,10 +37,9 @@ func NewCustomerController() CustomerController {
 	vm.addValidaator(&MaxItemsPerDayValidator{})
 	vm.addValidaator(&MaxAmountPerDayValidator{})
 	vm.addValidaator(&MaxAmountPerWeekValidtor{})
-	return &KohoCustomerController{
+	return CustomerController{
 		DbManager:Dbm,
 		Vm: vm,
-
 
 	}
 }

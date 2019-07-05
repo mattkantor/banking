@@ -1,25 +1,24 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"os"
-	"time"
-
-	"bufio"
 )
 
 type EventLogEntry struct {
 	CustomerId string
-	TxnId      string
-	EventTime  time.Time
+	Id      string
+	EventTime  string
 	Amount     float64
 }
 
 type ResultLogEntry struct {
 	CustomerId string
-	TxnId      string
+	Id      string
 	Accepted   bool
 }
 
@@ -60,14 +59,19 @@ func parseInputFile(fileName string) []EventLogEntry {
 	for scanner.Scan() {
 		var entry EventLogEntry
 		line := scanner.Text()
-		json.Unmarshal([]byte(line),&entry)
+		err := json.Unmarshal([]byte(line),&entry)
+		if err != nil{
+			panic(err)
+		}
 		entries = append(entries, entry)
 	}
 	return entries
 
 
 }
-func writeLog(out ResultLogEntry){
+func writeLog(e EventLogEntry, accepted bool){
+	var out = ResultLogEntry{CustomerId:e.CustomerId, Id:e.Id, Accepted: accepted}
+	fmt.Println(out)
 
 }
 
@@ -76,9 +80,9 @@ func (app *App) process(inputFile, outputFile string) {
 	var inputs []EventLogEntry
 	inputs = parseInputFile(inputFile)
 	for i := 0; i < len(inputs); i++ {
-		out, err:=app.Cc.AddDeposit(inputs[i])
+		accepted, err := app.Cc.AddDeposit(inputs[i])
 		if err != 403{
-			writeLog(out)
+			writeLog(inputs[i], accepted)
 		}
 
 	}

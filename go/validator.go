@@ -45,31 +45,43 @@ type MaxAmountPerDayValidator struct {}
 type MaxAmountPerWeekValidtor struct {}
 
 
-func (m *MaxItemsPerDayValidator )validate(data CustomerData, input EventLogEntry) bool{
-	return false
+func (m *MaxItemsPerDayValidator )validate(data CustomerData, e EventLogEntry) bool{
+	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
+	items := data.Deposits.MondayDate[monday].Day[dayIndex]
+	return len(items) <= maxItemsPerDay
 }
 
-func (m *MaxAmountPerDayValidator )validate(data CustomerData, input EventLogEntry) bool{
-	return false
+func (m *MaxAmountPerDayValidator )validate(data CustomerData, e EventLogEntry) bool{
+	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
+	items := data.Deposits.MondayDate[monday].Day[dayIndex]
+
+	return sum(items)  + e.Amount < maxAmountPerDay
 }
 
-func (m *MaxAmountPerWeekValidtor )validate(data CustomerData, input EventLogEntry) bool{
-	return false
+func (m *MaxAmountPerWeekValidtor )validate(data CustomerData, e EventLogEntry) bool{
+	monday, _ :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
+	items := data.Deposits.MondayDate[monday].Day
+	var total float64 = 0.0
+	for i:=0;i<len(items);i++{
+		total += sum(items[i])
+	}
+	return total  + e.Amount < maxAmountPerDay
+
 }
 
 
 
 //----------
-
-type TransactionExistsValidator struct {}
-
-func (m *TransactionExistsValidator) validte(customerRecords CustomerData,txnId string ) bool {
-	transactions := customerRecords.Transactions
-	for i := 0; i < len(transactions); i++ {
-
-		if transactions[i] == txnId {
-			return true
-		}
-	}
-	return false
-}
+//
+//type TransactionExistsValidator struct {}
+//
+//func (m *TransactionExistsValidator) validte(customerRecords CustomerData,txnId string ) bool {
+//	transactions := customerRecords.Transactions
+//	for i := 0; i < len(transactions); i++ {
+//
+//		if transactions[i] == txnId {
+//			return true
+//		}
+//	}
+//	return false
+//}

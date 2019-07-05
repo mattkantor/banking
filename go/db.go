@@ -12,7 +12,7 @@ type Daily struct{
 type CustomerData struct{
 	CustomerId string //purposefully redundant
 	Transactions []string
-	Deposits []DepositsPerWeek
+	Deposits DepositsPerWeek
 }
 
 var instance DBManager
@@ -38,19 +38,24 @@ func newDbManager() *DBManager {
 	return &DBManager{isInitialized: true, db: make(map[string]CustomerData)}
 }
 
-func (dbManager *DBManager) addDeposit(e EventLogEntry) bool {
+func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
 	// TODO
+	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
 
-	customerTransactions := dbManager.db[e.CustomerId].Transactions
-	customerTransactions = append(customerTransactions, e.TxnId)
+	customerData := dbManager.db[e.CustomerId]
+
+	customerTransactions := customerData.Transactions
+
+	customerTransactions = append(customerTransactions, e.Id)
 
 	customerDeposits := dbManager.db[e.CustomerId].Deposits
-	//monday := customerDeposits[
-	make(customerDeposits)
 
+	// TODO make
+	var depositsPerDay  = customerDeposits.MondayDate[monday].Day[dayIndex]
 
+	depositsPerDay = append(depositsPerDay, e.Amount)
 
-
+	dbManager.db[e.CustomerId] = CustomerData{Transactions:customerTransactions, Deposits:customerDeposits, CustomerId:e.CustomerId}
 
 	return true
 }
