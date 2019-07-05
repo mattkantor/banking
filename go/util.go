@@ -1,13 +1,25 @@
 package main
 
 import (
+	"log"
+	"regexp"
+	"strconv"
 	"time"
 )
 
 // I read an artcile about not writing util.go type files.
 
 func CleanCurrency(currency string) float64{
-	return 0
+
+	reg, err := regexp.Compile("[^0-9\\.]")
+	if err != nil {
+		log.Fatal(err)
+	}
+	processedString := reg.ReplaceAllString(currency, "")
+
+	curr, _:= strconv.ParseFloat(  processedString, 64)
+	return curr
+
 }
 
 func GetMondayAndoffsetForDate(date time.Time) (string, int){
@@ -21,8 +33,8 @@ func GetMondayAndoffsetForDate(date time.Time) (string, int){
 
 func ParseFileDateIntoRealDate(date string) time.Time{
 	// 2000-01-01T00:00:00Z
-
-	timeOut, err := time.Parse( "2006-01-02T15:04:05Z", date)
+	layout := "2006-01-02T15:04:05Z"
+	timeOut, err := time.Parse( layout, date)
 	if err != nil{
 		panic(err)
 	}
