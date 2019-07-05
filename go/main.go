@@ -10,10 +10,10 @@ import (
 )
 
 type EventLogEntry struct {
-	CustomerId string
-	Id      string
-	EventTime  string
-	Amount     float64
+	CustomerId string `json:"customer_id"`
+	Id      string  `json:"id"`
+	EventTime  string  `json:"time"`
+	Amount     string `json:"load_amount"`
 }
 
 type ResultLogEntry struct {
@@ -79,7 +79,9 @@ func (app *App) process(inputFile, outputFile string) {
 
 	var inputs []EventLogEntry
 	inputs = parseInputFile(inputFile)
+
 	for i := 0; i < len(inputs); i++ {
+		fmt.Println(inputs[i])
 		accepted, err := app.Cc.AddDeposit(inputs[i])
 		if err != 403{
 			writeLog(inputs[i], accepted)

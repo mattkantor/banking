@@ -53,7 +53,7 @@ func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
 	// TODO make
 	var depositsPerDay  = customerDeposits.MondayDate[monday].Day[dayIndex]
 
-	depositsPerDay = append(depositsPerDay, e.Amount)
+	depositsPerDay = append(depositsPerDay, CleanCurrency(e.Amount))
 
 	dbManager.db[e.CustomerId] = CustomerData{Transactions:customerTransactions, Deposits:customerDeposits, CustomerId:e.CustomerId}
 

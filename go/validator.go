@@ -55,7 +55,7 @@ func (m *MaxAmountPerDayValidator )validate(data CustomerData, e EventLogEntry) 
 	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
 	items := data.Deposits.MondayDate[monday].Day[dayIndex]
 
-	return sum(items)  + e.Amount < maxAmountPerDay
+	return sum(items)  + CleanCurrency(e.Amount) <= maxAmountPerDay
 }
 
 func (m *MaxAmountPerWeekValidtor )validate(data CustomerData, e EventLogEntry) bool{
@@ -65,7 +65,7 @@ func (m *MaxAmountPerWeekValidtor )validate(data CustomerData, e EventLogEntry) 
 	for i:=0;i<len(items);i++{
 		total += sum(items[i])
 	}
-	return total  + e.Amount < maxAmountPerDay
+	return total  + CleanCurrency(e.Amount) <= maxAmountPerDay
 
 }
 
