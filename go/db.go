@@ -1,15 +1,12 @@
 package main
 
 
-
-type DepositsPerDay struct{
-	DayOfWeek int8
-	Deposits []float64
+type DepositsPerWeek struct {
+		MondayDate map[string]Daily
 }
 
-type DepositsPerWeek struct {
-	Monday string
-	DailyDeposits []DepositsPerDay
+type Daily struct{
+	Day    map[int][]float64
 }
 
 type CustomerData struct{
@@ -41,8 +38,24 @@ func newDbManager() *DBManager {
 	return &DBManager{isInitialized: true, db: make(map[string]CustomerData)}
 }
 
-func (dbManager DBManager) AddDeposit(e EventLogEntry) (ResultLogEntry, int) {
+func (dbManager *DBManager) addDeposit(e EventLogEntry) bool {
 	// TODO
-	var res  = ResultLogEntry{CustomerId:"1", TxnId:"1", Accepted:true}
-	return res, 200
+
+	customerTransactions := dbManager.db[e.CustomerId].Transactions
+	customerTransactions = append(customerTransactions, e.TxnId)
+
+	customerDeposits := dbManager.db[e.CustomerId].Deposits
+	//monday := customerDeposits[
+	make(customerDeposits)
+
+
+
+
+
+	return true
+}
+
+func (dbManager *DBManager) getCustomerData(customerId string) CustomerData{
+	return dbManager.db[customerId]
+
 }

@@ -15,3 +15,12 @@ func GetMondayAndoffsetForDate(date string) (string, string){
 func ParseFileDateIntoRealDate(date string) (time.Time){
 	return time.Now()
 }
+
+func contains(item string, existing_items []string) bool {
+	for _, n := range existing_items {
+		if item == n {
+			return true
+		}
+	}
+	return false
+}
