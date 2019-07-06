@@ -23,7 +23,7 @@ func (cc *CustomerController) AddDeposit(e EventLogEntry) (accepted bool, code i
 	if vm.IsValid(cd, e) {
 		err := cc.DbManager.loadAccount(e)
 		if err {
-			panic("Error adding deposit")
+			panic(e)
 			return false, 500
 		}
 		return true, 200

@@ -47,25 +47,39 @@ type MaxAmountPerWeekValidtor struct {}
 
 func (m *MaxItemsPerDayValidator )validate(data CustomerData, e EventLogEntry) bool{
 	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
-	items := data.Deposits.MondayDate[monday].Day[dayIndex]
-	return len(items) <= maxItemsPerDay
+	if mondayItems, ok := data.Deposits.MondayDate[monday]; ok {
+		if dayItems, ok := mondayItems.Day[dayIndex];ok{
+			return  len(dayItems.Amounts)<maxItemsPerDay
+
+		}
+	}
+	return true
 }
 
 func (m *MaxAmountPerDayValidator )validate(data CustomerData, e EventLogEntry) bool{
 	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
-	items := data.Deposits.MondayDate[monday].Day[dayIndex]
-
-	return sum(items)  + CleanCurrency(e.Amount) <= maxAmountPerDay
+	if mondayItems, ok := data.Deposits.MondayDate[monday]; ok {
+		if dayItems, ok := mondayItems.Day[dayIndex];ok{
+			return sum(dayItems.Amounts)  + CleanCurrency(e.Amount) <= maxAmountPerDay
+		}
+	}
+	return true
 }
 
 func (m *MaxAmountPerWeekValidtor )validate(data CustomerData, e EventLogEntry) bool{
 	monday, _ :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
-	items := data.Deposits.MondayDate[monday].Day
-	var total float64 = 0.0
-	for i:=0;i<len(items);i++{
-		total += sum(items[i])
+	if items, ok := data.Deposits.MondayDate[monday]; ok {
+		var total float64 = 0.0
+		for i:=0;i<len(items.Day);i++{
+			total += sum(items.Day[i].Amounts)
+		}
+		return total  + CleanCurrency(e.Amount) <= maxAmountPerDay
+	}else{
+		return true
 	}
-	return total  + CleanCurrency(e.Amount) <= maxAmountPerDay
+
+
+
 
 }
 
