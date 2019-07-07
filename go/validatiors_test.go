@@ -63,6 +63,20 @@ func TestShouldFailDailyAmount(t *testing.T){
 		t.Error("validator failed - should not allow another txn too much $ per day")
 	}
 }
+func TestShouldFailDailyAmountSinglePOsting(t *testing.T){
+	var maxAmountPerDayValidator MaxAmountPerDayValidator
+	e:=EventLogEntry{CustomerId:customerId, Id:"123",Amount:"$8933.34", EventTime:"2019-07-01T12:34:56Z"}
+	deposits:=map[string]map[int][]float64{}
+	deposits["2019-07-01"]=map[int][]float64{}
+	deposits["2019-07-01"][1] = []float64{}
+	customerData := CustomerData{Transactions:[]string{},
+		CustomerId:customerId,
+		Deposits: deposits}
+	v := maxAmountPerDayValidator.validate(customerData, e)
+	if v == true{
+		t.Error("validator failed - should not allow another txn too large a deposits")
+	}
+}
 //weekly
 
 func TestShouldValidateWeeklyAmount(t *testing.T){

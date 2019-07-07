@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // a simplesitic approach
 type CustomerData struct{
 	CustomerId string //purposefully redundant
@@ -41,57 +43,77 @@ func newDbManager() *DBManager {
 	return &DBManager{isInitialized: true, db: make(map[string]CustomerData)}
 }
 
-//func (cd *CustomerData)addTransaction(txn string){
-//	cd.Transactions = append(cd.Transactions, txn)
-//
-//}
-
-func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
-	// TODO init customer
-	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
-	amountFloat:=CleanCurrency(e.Amount)
-	var customerData CustomerData
-	var ok bool
-	if customerData, ok = dbManager.db[e.CustomerId];!ok{
-		// new customer
-		customerData = CustomerData{CustomerId:e.CustomerId}
-
-	}
+// assume customer already exists because this happens after the write.
+// We should not assume this in general
+func (dbManager *DBManager) recordTransaction(customerId, txn string){
+	customerData := dbManager.getCustomerData(customerId)
 
 	customerTransactions := customerData.Transactions
-	customerTransactions = append(customerTransactions, e.Id)
+	customerTransactions = append(customerTransactions, txn)
+	customerData.Transactions = customerTransactions
+	dbManager.db[customerId] = customerData
+}
 
+func (dbManager *DBManager)recordLoad(e EventLogEntry) bool{
 
-	customerDeposits := dbManager.db[e.CustomerId].Deposits
+	customerData := dbManager.getCustomerData(e.CustomerId)
 
+	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
+	amountFloat:=CleanCurrency(e.Amount)
 
+	//assume it's true for the sake of this exercise
 
+	customerDeposits := customerData.Deposits
 
-	if len(customerDeposits) == 0 {
-		customerDeposits = map[string]map[int][]float64{}
-		//customerDeposits[monday]=make(map[int],0)
-	}
-	if _, ok := customerDeposits[monday]; !ok {
+	if  customerDeposits[monday]==nil {
+
 
 		customerDeposits[monday]=map[int][]float64{}
-		//customerDeposits[monday][dayIndex]= make([]float64,0)
 	}
 	if _, ok := customerDeposits[monday][dayIndex];!ok{
 		customerDeposits[monday][dayIndex]= []float64{}
 	}
 
 	amounts := customerDeposits[monday][dayIndex]
-
 	newTotal := append(amounts, amountFloat)
 
 	customerDeposits[monday][dayIndex] = newTotal
-	dbManager.db[e.CustomerId] = CustomerData{Transactions:customerTransactions, Deposits:customerDeposits, CustomerId:e.CustomerId}
 
+	customerData.Deposits = customerDeposits
 
-	return true
+	dbManager.db[e.CustomerId] = customerData
+	return true // false would be for a failure which doesn't panic. No case for this here
 }
 
+
+
+//func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
+//	// TODO init customer
+//
+//	var ok bool
+//	currentCustomer :=dbManager.db[e.CustomerId]
+//	fmt.Println(currentCustomer)
+//	if _, ok = dbManager.db[e.CustomerId];!ok{
+//		// new customer - yay!
+//		fmt.Println("Im new!")
+//		customerData := CustomerData{CustomerId:e.CustomerId, Transactions:[]string{}, Deposits: map[string]map[int][]float64{}}
+//		dbManager.db[e.CustomerId] = customerData
+//		fmt.Println(dbManager.db)
+//	}
+//	return dbManager.recordLoad(e)
+//}
+
 func (dbManager *DBManager) getCustomerData(customerId string) CustomerData{
+	var ok bool
+	currentCustomer :=dbManager.db[customerId]
+	fmt.Println(currentCustomer)
+	if _, ok = dbManager.db[customerId];!ok{
+		// new customer - yay!
+		fmt.Println("Im new!")
+		customerData := CustomerData{CustomerId:customerId, Transactions:[]string{}, Deposits: map[string]map[int][]float64{}}
+		dbManager.db[customerId] = customerData
+
+	}
 	return dbManager.db[customerId]
 
 }

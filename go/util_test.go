@@ -20,6 +20,14 @@ func TestParseFileDateIntoRealDate(t *testing.T) {
 	}
 }
 
+func TestContains(t *testing.T){
+	source := []string{"1","2","3"}
+	includes := "2"
+	answer := contains(includes, source)
+	if !answer{
+		t.Error("Contains isn't working")
+	}
+}
 
 func TestCleanCurrency(t *testing.T){
 	curr := CleanCurrency("$1,234.56")

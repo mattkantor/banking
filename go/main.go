@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 )
@@ -17,9 +16,9 @@ type EventLogEntry struct {
 }
 
 type ResultLogEntry struct {
-	CustomerId string
-	Id      string
-	Accepted   bool
+	Id      string `json:"id"`
+	CustomerId string `json:"customer_id"`
+	Accepted   bool `json:"accepted"`
 }
 
 type App struct {
@@ -48,13 +47,21 @@ func (app *App) process(inputFile, outputFile string) {
 		log.Fatal(err)
 	}
 	defer file.Close()
+	os.Create(outputFile) //let it fail
+	fOut, err := os.OpenFile(outputFile,1,777)
+	if err != nil {
+		panic(err)
+	}
+
+	defer fOut.Close()
+
 
 	scanner := bufio.NewScanner(file)
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-	//var entries []EventLogEntry
+
 	for scanner.Scan() {
 		var entry EventLogEntry
 		line := scanner.Text()
@@ -62,15 +69,27 @@ func (app *App) process(inputFile, outputFile string) {
 		if err != nil{
 			panic(err)
 		}
-		accepted, code := app.Cc.AddDeposit(entry)
+		accepted, code := app.Cc.LoadCard(entry)
+
 		if code != 403 {
-			writeLog(entry, accepted)
+			writeLog(fOut, entry, accepted)
 
 		}
 	}
 }
-func writeLog(e EventLogEntry, accepted bool){
+func writeLog(fOut *os.File,e EventLogEntry, accepted bool){
 	var out = ResultLogEntry{CustomerId:e.CustomerId, Id:e.Id, Accepted: accepted}
-	fmt.Println(out)
+
+	outJson, _ := json.Marshal(out)
+
+	if _, err := fOut.Write(outJson); err != nil {
+		panic(err)
+	}
+	// TODO Sorry hacky
+	if _, err := fOut.Write([]byte("\n")); err != nil {
+		panic(err)
+	}
+
+
 
 }

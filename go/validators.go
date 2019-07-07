@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 const maxItemsPerDay = 3
 const maxAmountPerDay = 5000
 const maxAmountPerWeek = 20000
@@ -14,8 +12,7 @@ type MaxAmountPerWeekValidator struct {}
 func (m *MaxItemsPerDayValidator )validate(data CustomerData, e EventLogEntry) bool{
 
 	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
-	fmt.Println(data.Deposits)
-	fmt.Println(monday)
+
 	if _, ok := data.Deposits[monday]; ok {
 
 		if dayItems, ok := data.Deposits[monday][dayIndex];ok{
@@ -30,12 +27,15 @@ func (m *MaxItemsPerDayValidator )validate(data CustomerData, e EventLogEntry) b
 
 func (m *MaxAmountPerDayValidator )validate(data CustomerData, e EventLogEntry) bool{
 	monday, dayIndex :=  GetMondayAndoffsetForDate(ParseFileDateIntoRealDate(e.EventTime))
+
+	var totalDailyItems float64 = 0.0
 	if mondayItems, ok := data.Deposits[monday]; ok {
+
 		if dayItems, ok := mondayItems[dayIndex];ok{
-			return sum(dayItems)  + CleanCurrency(e.Amount) <= maxAmountPerDay
+			totalDailyItems = sum(dayItems)
 		}
 	}
-	return true
+	return totalDailyItems +  CleanCurrency(e.Amount) <= maxAmountPerDay
 }
 
 func (m *MaxAmountPerWeekValidator )validate(data CustomerData, e EventLogEntry) bool{

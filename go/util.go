@@ -41,8 +41,8 @@ func ParseFileDateIntoRealDate(date string) time.Time{
 	return timeOut
 }
 
-func contains(item string, existing_items []string) bool {
-	for _, n := range existing_items {
+func contains(item string, existingItems []string) bool {
+	for _, n := range existingItems {
 		if item == n {
 			return true
 		}
