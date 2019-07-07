@@ -13,7 +13,7 @@ func TestCreateANewDB(t *testing.T) {
 		Amount:"$2345.67",
 	}
 
-	success :=DbManager.loadAccount(e)
+	success :=DbManager.recordLoad(e)
 	if !success {
 		t.Errorf("Could not create a new DB instance")
 	}
