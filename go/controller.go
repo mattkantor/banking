@@ -9,7 +9,7 @@ type CustomerController struct {
 
 func (cc *CustomerController) AddDeposit(e EventLogEntry) (accepted bool, code int){
 
-	vm := NewValidationManager()
+
 
 	cd := cc.DbManager.getCustomerData(e.CustomerId)
 
@@ -20,7 +20,7 @@ func (cc *CustomerController) AddDeposit(e EventLogEntry) (accepted bool, code i
 		return false, 403
 	}
 
-	if vm.IsValid(cd, e) {
+	if cc.Vm.IsValid(cd, e) {
 		ok := cc.DbManager.loadAccount(e)
 		if !ok {
 
@@ -36,7 +36,7 @@ func NewCustomerController() CustomerController {
 	vm := NewValidationManager()
 	vm.addValidaator(&MaxItemsPerDayValidator{})
 	vm.addValidaator(&MaxAmountPerDayValidator{})
-	vm.addValidaator(&MaxAmountPerWeekValidtor{})
+	vm.addValidaator(&MaxAmountPerWeekValidator{})
 	return CustomerController{
 		DbManager:Dbm,
 		Vm: vm,
