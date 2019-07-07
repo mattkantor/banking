@@ -81,7 +81,7 @@ func (app *App) process(inputFile, outputFile string) {
 	inputs = parseInputFile(inputFile)
 
 	for i := 0; i < len(inputs); i++ {
-		fmt.Println(inputs[i])
+
 		accepted, err := app.Cc.AddDeposit(inputs[i])
 		if err != 403{
 			writeLog(inputs[i], accepted)

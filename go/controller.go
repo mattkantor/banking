@@ -21,9 +21,9 @@ func (cc *CustomerController) AddDeposit(e EventLogEntry) (accepted bool, code i
 	}
 
 	if vm.IsValid(cd, e) {
-		err := cc.DbManager.loadAccount(e)
-		if err {
-			panic(e)
+		ok := cc.DbManager.loadAccount(e)
+		if !ok {
+
 			return false, 500
 		}
 		return true, 200

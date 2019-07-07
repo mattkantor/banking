@@ -1,25 +1,21 @@
 package main
 
-import (
-	"fmt"
-
-)
-
+// a simplesitic approach
 type CustomerData struct{
 	CustomerId string //purposefully redundant
 	Transactions []string
-	Deposits DepositsPerWeek
+	Deposits map[string]map[int][]float64
 }
-type DepositsPerWeek struct {
-		Mondays map[string]Dailies
-}
+//type DepositsPerWeek struct {
+//		Mondays map[string]Dailies
+//}
 
-type Dailies struct{
-	Day  map[int]Deposits
-}
-type Deposits struct {
-	Amount []float64
-}
+//type Dailies struct{
+//	Day  map[int]Deposits
+//}
+//type Deposits struct {
+//	Amount []float64
+//}
 
 
 var instance DBManager
@@ -64,68 +60,29 @@ func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
 
 	customerDeposits := dbManager.db[e.CustomerId].Deposits
 
-	fmt.Println(customerDeposits)
-	// TODO make this less messy
 
 
-	/*
-	check for a customer record
 
-	yes -
-	- check for a monday record
-	No
-	- create empty record
-
-	yes -
-	check foor a daily record
-
-	yes -
-	append to day
-
-
-	if daylist, ok := mondayList.Day[dayIndex];ok{
-			daylist.Amounts = append(daylist.Amounts, amountFloat)
-
-			mondayMap[monday].Day[dayIndex] = daylist
-		}else{
-
-			mondayMap[monday].Day[dayIndex] = Deposits{Amounts: []float64{amountFloat}}
-		}
-
-	 */
-
-
-	mondayMap := customerDeposits.Mondays
-	fmt.Println(mondayMap)
-	if len(mondayMap) == 0 {
-		mondayMap = make(map[string]Dailies, 1)
-		mondayMap[monday]=Dailies{}
+	if len(customerDeposits) == 0 {
+		customerDeposits = map[string]map[int][]float64{}
+		//customerDeposits[monday]=make(map[int],0)
 	}
-	if _, ok := mondayMap[monday]; !ok {
-		
-		daily[dayIndex]=Deposits{}
-		mondayMap[monday] = daily
-	}
-	fmt.Println(mondayMap)
-	if _, ok := mondayMap[monday].Day[dayIndex];!ok{
-		fmt.Println("Initializing day")
-		tempThing := mondayMap[monday].Day
-		fmt.Println(tempThing)
-		mondayMap[monday].Day[dayIndex] = Deposits{}
-		amountTemp := make([]float64,0)
-		mondayMap[monday].Day[dayIndex]=Deposits{Amount: amountTemp}
-		// map exists - week found
+	if _, ok := customerDeposits[monday]; !ok {
 
+		customerDeposits[monday]=map[int][]float64{}
+		//customerDeposits[monday][dayIndex]= make([]float64,0)
 	}
-	amounts := mondayMap[monday].Day[dayIndex].Amount
+	if _, ok := customerDeposits[monday][dayIndex];!ok{
+		customerDeposits[monday][dayIndex]= []float64{}
+	}
+
+	amounts := customerDeposits[monday][dayIndex]
+
 	newTotal := append(amounts, amountFloat)
-	tempDay :=  mondayMap[monday].Day[dayIndex]
-	tempDay.Amount = newTotal
-	mondayMap[monday].Day[dayIndex] = tempDay
 
-	customerDeposits.Mondays = mondayMap
-
+	customerDeposits[monday][dayIndex] = newTotal
 	dbManager.db[e.CustomerId] = CustomerData{Transactions:customerTransactions, Deposits:customerDeposits, CustomerId:e.CustomerId}
+
 
 	return true
 }
