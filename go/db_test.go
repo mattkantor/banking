@@ -10,7 +10,7 @@ func TestCreateANewDB(t *testing.T) {
 		CustomerId:"123",
 		Id: "123",
 		EventTime:"2019-01-03T12:13:34Z",
-		Amount:2345.67,
+		Amount:"$2345.67",
 	}
 
 	success :=DbManager.loadAccount(e)

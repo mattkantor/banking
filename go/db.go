@@ -41,7 +41,10 @@ func newDbManager() *DBManager {
 	return &DBManager{isInitialized: true, db: make(map[string]CustomerData)}
 }
 
-
+//func (cd *CustomerData)addTransaction(txn string){
+//	cd.Transactions = append(cd.Transactions, txn)
+//
+//}
 
 func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
 	// TODO init customer
@@ -57,6 +60,7 @@ func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
 
 	customerTransactions := customerData.Transactions
 	customerTransactions = append(customerTransactions, e.Id)
+
 
 	customerDeposits := dbManager.db[e.CustomerId].Deposits
 

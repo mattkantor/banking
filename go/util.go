@@ -24,8 +24,8 @@ func CleanCurrency(currency string) float64{
 
 func GetMondayAndoffsetForDate(date time.Time) (string, int){
 	a := date.Weekday()
-	date.AddDate(0,0,-int(a))
-	dt:=date.AddDate(0,0,-int(a))
+
+	dt:=date.AddDate(0,0,-int(a)+1)
 
 	t :=  dt.Format( "2006-01-02")
 	return t, int(a)
