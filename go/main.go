@@ -42,9 +42,8 @@ func main() {
 	app.process(inFile, outFile)
 
 }
-
-func parseInputFile(fileName string) []EventLogEntry {
-	file, err := os.Open(fileName)
+func (app *App) process(inputFile, outputFile string) {
+	file, err := os.Open(inputFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,7 +54,7 @@ func parseInputFile(fileName string) []EventLogEntry {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-	var entries []EventLogEntry
+	//var entries []EventLogEntry
 	for scanner.Scan() {
 		var entry EventLogEntry
 		line := scanner.Text()
@@ -63,31 +62,15 @@ func parseInputFile(fileName string) []EventLogEntry {
 		if err != nil{
 			panic(err)
 		}
-		entries = append(entries, entry)
+		accepted, code := app.Cc.AddDeposit(entry)
+		if code != 403 {
+			writeLog(entry, accepted)
+
+		}
 	}
-	return entries
-
-
 }
 func writeLog(e EventLogEntry, accepted bool){
 	var out = ResultLogEntry{CustomerId:e.CustomerId, Id:e.Id, Accepted: accepted}
 	fmt.Println(out)
-
-}
-
-func (app *App) process(inputFile, outputFile string) {
-
-	var inputs []EventLogEntry
-	inputs = parseInputFile(inputFile)
-
-	for i := 0; i < len(inputs); i++ {
-
-		accepted, err := app.Cc.AddDeposit(inputs[i])
-		if err != 403{
-			writeLog(inputs[i], accepted)
-		}
-
-	}
-
 
 }
