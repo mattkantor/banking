@@ -87,26 +87,10 @@ func (dbManager *DBManager)recordLoad(e EventLogEntry) bool{
 
 
 
-//func (dbManager *DBManager) loadAccount(e EventLogEntry) bool {
-//	// TODO init customer
-//
-//	var ok bool
-//	currentCustomer :=dbManager.db[e.CustomerId]
-//	fmt.Println(currentCustomer)
-//	if _, ok = dbManager.db[e.CustomerId];!ok{
-//		// new customer - yay!
-//		fmt.Println("Im new!")
-//		customerData := CustomerData{CustomerId:e.CustomerId, Transactions:[]string{}, Deposits: map[string]map[int][]float64{}}
-//		dbManager.db[e.CustomerId] = customerData
-//		fmt.Println(dbManager.db)
-//	}
-//	return dbManager.recordLoad(e)
-//}
 
 func (dbManager *DBManager) getCustomerData(customerId string) CustomerData{
 	var ok bool
-	currentCustomer :=dbManager.db[customerId]
-	fmt.Println(currentCustomer)
+
 	if _, ok = dbManager.db[customerId];!ok{
 		// new customer - yay!
 		fmt.Println("Im new!")
